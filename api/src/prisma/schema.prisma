@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  uploadedDocuments Document[]           @relation("Uploader")
+  assignments       DocumentAssignment[]
+}
+
+model Document {
+  id         Int      @id @default(autoincrement())
+  title      String
+  filePath   String
+  uploaderId Int
+  uploader   User     @relation("Uploader", fields: [uploaderId], references: [id])
+
+  assignments DocumentAssignment[]
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt
+}
+
+// (many-to-many)
+model DocumentAssignment {
+  id                    Int                  @id @default(autoincrement())
+  documentId            Int
+  userId                Int
+  document              Document             @relation(fields: [documentId], references: [id])
+  user                  User                 @relation(fields: [userId], references: [id])
+  created_at            DateTime             @default(now())
+
+  @@unique([documentId, userId])
+}

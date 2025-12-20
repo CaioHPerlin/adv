@@ -4,6 +4,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
   validateSync,
 } from 'class-validator';
 
@@ -15,6 +16,10 @@ export class EnvironmentVariables {
   @IsInt()
   @IsOptional()
   PORT: number = 5000;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_URL: string;
 }
 
 export function validateEnvironmentVariables(
