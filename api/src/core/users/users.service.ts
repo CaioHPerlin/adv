@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { HashService } from 'src/common/providers/hash.service';
+import { UserDto } from './dto/user.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -12,19 +14,17 @@ export class UsersService {
   async verifyCredentials(
     email: string,
     plainPassword: string,
-  ): Promise<{ userId: number | null }> {
+  ): Promise<UserDto | null> {
     const user = await this.usersRepository.findByEmail(email);
-
     if (!user) {
-      return { userId: null };
+      return null;
     }
 
     const isValid = await this.hashService.verify(user.password, plainPassword);
-
     if (!isValid) {
-      return { userId: null };
+      return null;
     }
 
-    return { userId: user.id };
+    return plainToClass(UserDto, user);
   }
 }
