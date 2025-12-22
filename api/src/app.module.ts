@@ -4,7 +4,6 @@ import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [CoreModule, ConfigModule],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}
