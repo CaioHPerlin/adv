@@ -5,8 +5,8 @@ export class UserDto implements User {
   name: string;
   id: number;
   email: string;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   @Exclude()
   password: string;
