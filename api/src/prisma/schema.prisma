@@ -15,37 +15,26 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  name       String
-  password   String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  uploadedDocuments Document[]           @relation("Uploader")
-  assignments       DocumentAssignment[]
+  cases Case[]
 }
 
-model Document {
-  id         Int    @id @default(autoincrement())
-  title      String
-  filePath   String
-  uploaderId Int
-  uploader   User   @relation("Uploader", fields: [uploaderId], references: [id])
+model Case {
+  id               Int      @id @default(autoincrement())
+  number           String   @unique
+  court            String
+  clientName       String
+  distributionDate DateTime @default(now())
+  description      String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  assignments DocumentAssignment[]
-  created_at  DateTime             @default(now())
-  updated_at  DateTime             @updatedAt
-}
-
-// (many-to-many)
-model DocumentAssignment {
-  id         Int      @id @default(autoincrement())
-  documentId Int
-  userId     Int
-  document   Document @relation(fields: [documentId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
-  created_at DateTime @default(now())
-
-  @@unique([documentId, userId])
+  responsibleUserId Int
+  responsibleUser   User @relation(fields: [responsibleUserId], references: [id])
 }
