@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { HashService } from 'src/common/providers/hash.service';
 import { UserDto } from './dto/user.dto';
 import { plainToClass } from 'class-transformer';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,24 @@ export class UsersService {
     if (!isValid) {
       return null;
     }
+
+    return plainToClass(UserDto, user);
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<UserDto> {
+    const existingUser = await this.usersRepository.findByEmail(
+      createUserDto.email,
+    );
+    if (existingUser) {
+      throw new ConflictException('Email already in use.');
+    }
+
+    const hashedPassword = await this.hashService.hash(createUserDto.password);
+
+    const user = await this.usersRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
 
     return plainToClass(UserDto, user);
   }
