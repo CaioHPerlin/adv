@@ -10,6 +10,12 @@ export const documentConfig: Omit<OpenAPIObject, 'paths'> =
     .setDescription(
       'Api documentation for the PerlinLaw web app. This is a full-stack Node.js application. Made by C. H. Perlin.',
     )
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+    })
     .setVersion('ALPHA 0.1')
     .setContact(
       'Author',
