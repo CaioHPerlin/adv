@@ -9,5 +9,6 @@ import { validateEnvironmentVariables } from './environment-variables';
       validate: validateEnvironmentVariables,
     }),
   ],
+  exports: [NestConfigModule],
 })
 export class ConfigModule {}
