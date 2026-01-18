@@ -2,14 +2,13 @@ import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
-  ValidationPipe,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-local';
-import { AuthService } from '../auth.service';
-import { UserDto } from 'src/core/users/dto/user.dto';
-import { validateSync } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
+import { Strategy } from 'passport-local';
+import { UserDto } from 'src/core/users/dto/user.dto';
+import { AuthService } from '../auth.service';
 import { SignInDto } from '../dto/sign-in.dto';
 
 @Injectable()
@@ -42,7 +41,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     const user = await this.authService.validateUser(dto.email, dto.password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        message: 'As credenciais digitadas são inválidas',
+      });
     }
 
     return user;
