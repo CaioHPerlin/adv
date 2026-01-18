@@ -1,10 +1,9 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
+import { defineConfig } from "vite";
 
-// https://vite.dev/config/
 export default defineConfig({
 	resolve: {
 		alias: {
@@ -16,6 +15,7 @@ export default defineConfig({
 		tanstackRouter({
 			target: "react",
 			autoCodeSplitting: true,
+			quoteStyle: "double",
 		}),
 		react(),
 	],
