@@ -10,4 +10,11 @@ export class CaseDto implements Case {
   createdAt: Date;
   updatedAt: Date;
   createdByUserId: number;
+  assignedUsers?: Array<{
+    user: {
+      id: number;
+      email: string;
+      name: string;
+    };
+  }>;
 }

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Case } from './entities/case.entity';
 import { CreateCaseDto } from './dto/create-case.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
 import { Prisma } from 'src/prisma/generated/client';
 
 @Injectable()
@@ -26,7 +27,21 @@ export class CasesRepository {
   }
 
   async findAll(): Promise<Case[]> {
-    return this.prismaService.case.findMany();
+    return this.prismaService.case.findMany({
+      include: {
+        assignedUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findAssignedToUser(userId: number): Promise<Case[]> {
@@ -40,6 +55,66 @@ export class CasesRepository {
           },
         },
       },
+      include: {
+        assignedUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async update(id: number, updateCaseDto: UpdateCaseDto): Promise<Case> {
+    const existingCase = await this.prismaService.case.findUnique({
+      where: { id },
+    });
+
+    if (!existingCase) {
+      throw new NotFoundException(`Case with ID ${id} not found`);
+    }
+
+    const updateData: any = { ...updateCaseDto };
+    if (updateCaseDto.distributionDate) {
+      updateData.distributionDate = new Date(updateCaseDto.distributionDate);
+    }
+
+    return this.prismaService.case.update({
+      where: { id },
+      data: updateData,
+      include: {
+        assignedUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async remove(id: number): Promise<void> {
+    const existingCase = await this.prismaService.case.findUnique({
+      where: { id },
+    });
+
+    if (!existingCase) {
+      throw new NotFoundException(`Case with ID ${id} not found`);
+    }
+
+    await this.prismaService.case.delete({
+      where: { id },
     });
   }
 }

@@ -46,4 +46,17 @@ export class CasesController {
   findAssigned(@Param('id', ParseIntPipe) id: number) {
     return this.casesService.findAssignedToUser(id);
   }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCaseDto: UpdateCaseDto,
+  ) {
+    return this.casesService.update(id, updateCaseDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.casesService.remove(id);
+  }
 }

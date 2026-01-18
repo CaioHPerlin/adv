@@ -1,5 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateCaseDto } from './dto/create-case.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
 import { CasesRepository } from './cases.repository';
 import { CaseDto } from './dto/case.dto';
 import { Case } from './entities/case.entity';
@@ -39,5 +40,14 @@ export class CasesService {
   async findAssignedToUser(userId: number): Promise<CaseDto[]> {
     const cases = await this.casesRepository.findAssignedToUser(userId);
     return cases.map((c) => this.toDto(c));
+  }
+
+  async update(id: number, updateCaseDto: UpdateCaseDto): Promise<CaseDto> {
+    const updatedCase = await this.casesRepository.update(id, updateCaseDto);
+    return this.toDto(updatedCase);
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.casesRepository.remove(id);
   }
 }
