@@ -1,22 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Request,
-  ConflictException,
+  Get,
+  Param,
   ParseIntPipe,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { CasesService } from './cases.service';
-import { CreateCaseDto } from './dto/create-case.dto';
-import { UpdateCaseDto } from './dto/update-case.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/core/auth/guards/jwt-auth.guard';
 import { JwtPayload } from 'src/core/auth/jwt/jwt-payload.interface';
+import { CasesService } from './cases.service';
+import { AssignUsersDto } from './dto/assign-users.dto';
+import { CreateCaseDto } from './dto/create-case.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -53,6 +53,14 @@ export class CasesController {
     @Body() updateCaseDto: UpdateCaseDto,
   ) {
     return this.casesService.update(id, updateCaseDto);
+  }
+
+  @Post(':id/assign-users')
+  assignUsers(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() assignUsersDto: AssignUsersDto,
+  ) {
+    return this.casesService.assignUsers(id, assignUsersDto.userIds);
   }
 
   @Delete(':id')
