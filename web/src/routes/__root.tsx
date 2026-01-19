@@ -1,6 +1,5 @@
 import type { AuthContextType } from "@/contexts/auth";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 interface RootRouterContext {
 	auth: AuthContextType;
@@ -14,7 +13,7 @@ function RootComponent() {
 	return (
 		<>
 			<Outlet />
-			<TanStackRouterDevtools />
+			{/* <TanStackRouterDevtools /> */}
 		</>
 	);
 }
