@@ -1,5 +1,5 @@
-import axios from "axios";
 import type { AxiosInstance } from "axios";
+import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -12,6 +12,18 @@ interface SignInResponse {
 	};
 }
 
+interface User {
+	id: number;
+	email: string;
+	name: string;
+}
+
+interface CreateUserPayload {
+	email: string;
+	name: string;
+	password: string;
+}
+
 interface Case {
 	id: number;
 	number: string;
@@ -22,13 +34,13 @@ interface Case {
 	createdAt: string;
 	updatedAt: string;
 	createdByUserId: number;
-	assignedUsers?: Array<{
+	assignedUsers?: {
 		user: {
 			id: number;
 			email: string;
 			name: string;
 		};
-	}>;
+	}[];
 }
 
 interface CreateCasePayload {
@@ -111,6 +123,29 @@ class ApiClient {
 
 	async deleteCase(id: number): Promise<void> {
 		await this.client.delete(`/cases/${id}`);
+	}
+
+	async assignUsersToCase(caseId: number, userIds: number[]): Promise<Case> {
+		const response = await this.client.post<Case>(`/cases/${caseId}/assign-users`, {
+			userIds,
+		});
+		return response.data;
+	}
+
+	// Users endpoints
+	async getAllUsers(): Promise<User[]> {
+		const response = await this.client.get<User[]>("/users");
+		return response.data;
+	}
+
+	async getUserById(id: number): Promise<User> {
+		const response = await this.client.get<User>(`/users/${id}`);
+		return response.data;
+	}
+
+	async createUser(payload: CreateUserPayload): Promise<User> {
+		const response = await this.client.post<User>("/users", payload);
+		return response.data;
 	}
 }
 
