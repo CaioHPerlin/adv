@@ -1,9 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
-import { HashService } from 'src/common/providers/hash.service';
-import { UserDto } from './dto/user.dto';
 import { plainToClass } from 'class-transformer';
+import { HashService } from 'src/common/providers/hash.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserDto } from './dto/user.dto';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
@@ -44,6 +44,19 @@ export class UsersService {
       password: hashedPassword,
     });
 
+    return plainToClass(UserDto, user);
+  }
+
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.usersRepository.findAll();
+    return users.map((user) => plainToClass(UserDto, user));
+  }
+
+  async findById(id: number): Promise<UserDto | null> {
+    const user = await this.usersRepository.findById(id);
+    if (!user) {
+      return null;
+    }
     return plainToClass(UserDto, user);
   }
 }
