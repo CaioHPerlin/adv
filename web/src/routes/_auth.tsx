@@ -1,5 +1,7 @@
 import { Sidebar } from "@/components/sidebar";
+import { useApp } from "@/contexts/app";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_auth")({
 	beforeLoad: async ({ context, location }) => {
@@ -17,9 +19,17 @@ export const Route = createFileRoute("/_auth")({
 });
 
 function AuthLayout() {
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+	const { openCreateUserModal, openCreateCaseModal } = useApp();
+
 	return (
 		<div className="flex h-screen">
-			<Sidebar />
+			<Sidebar
+				isCollapsed={sidebarCollapsed}
+				onCollapsedChange={setSidebarCollapsed}
+				onCreateUserClick={openCreateUserModal}
+				onCreateCaseClick={openCreateCaseModal}
+			/>
 			<main className="flex-1 overflow-y-auto bg-gray-50">
 				<Outlet />
 			</main>
