@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/core/users/users.service';
 import { UserDto } from '../users/dto/user.dto';
-import { SignUpDto } from './dto/sign-up.dto';
-import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt/jwt-payload.interface';
 
 @Injectable()
@@ -29,7 +28,7 @@ export class AuthService {
     return { accessToken, user };
   }
 
-  async signUp(signUpDto: SignUpDto): Promise<UserDto> {
-    return this.usersService.create(signUpDto);
-  }
+  // async signUp(signUpDto: SignUpDto): Promise<UserDto> {
+  //   return this.usersService.create(signUpDto);
+  // }
 }
