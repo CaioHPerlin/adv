@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Case } from './entities/case.entity';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { UpdateCaseDto } from './dto/update-case.dto';
-import { Prisma } from 'src/prisma/generated/client';
+import { Case } from './entities/case.entity';
 
 @Injectable()
 export class CasesRepository {
@@ -17,11 +16,34 @@ export class CasesRepository {
     createCaseDto: CreateCaseDto,
     createdByUserId: number,
   ): Promise<Case> {
+    const { assignedUserIds, ...caseData } = createCaseDto;
     return this.prismaService.case.create({
       data: {
-        ...createCaseDto,
+        ...caseData,
         createdByUser: { connect: { id: createdByUserId } },
-        distributionDate: new Date(createCaseDto.distributionDate),
+        distributionDate: new Date(caseData.distributionDate),
+        assignedUsers: assignedUserIds
+          ? {
+              createMany: {
+                data: assignedUserIds.map((userId) => ({
+                  userId,
+                })),
+              },
+            }
+          : undefined,
+      },
+      include: {
+        assignedUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -104,6 +126,52 @@ export class CasesRepository {
     });
   }
 
+  async assignUsersToCase(caseId: number, userIds: number[]): Promise<Case> {
+    const existingCase = await this.prismaService.case.findUnique({
+      where: { id: caseId },
+    });
+
+    if (!existingCase) {
+      throw new NotFoundException(`Case with ID ${caseId} not found`);
+    }
+
+    // Delete existing assignments
+    await this.prismaService.userCase.deleteMany({
+      where: { caseId },
+    });
+
+    // Create new assignments
+    await this.prismaService.userCase.createMany({
+      data: userIds.map((userId) => ({
+        userId,
+        caseId,
+      })),
+    });
+
+    const updatedCase = await this.prismaService.case.findUnique({
+      where: { id: caseId },
+      include: {
+        assignedUsers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!updatedCase) {
+      throw new NotFoundException(`Case with ID ${caseId} not found`);
+    }
+
+    return updatedCase;
+  }
+
   async remove(id: number): Promise<void> {
     const existingCase = await this.prismaService.case.findUnique({
       where: { id },
@@ -112,6 +180,11 @@ export class CasesRepository {
     if (!existingCase) {
       throw new NotFoundException(`Case with ID ${id} not found`);
     }
+
+    // Delete all assignments first
+    await this.prismaService.userCase.deleteMany({
+      where: { caseId: id },
+    });
 
     await this.prismaService.case.delete({
       where: { id },
