@@ -1,11 +1,13 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   IsDateString,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { Case } from '../entities/case.entity';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCaseDto implements Partial<Case> {
   @ApiProperty({ example: '12345' })
@@ -31,4 +33,10 @@ export class CreateCaseDto implements Partial<Case> {
   @ApiProperty({ example: '2026-05-02' })
   @IsDateString()
   distributionDate: Date;
+
+  @ApiPropertyOptional({ example: [1, 2, 3] })
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  assignedUserIds?: number[];
 }
