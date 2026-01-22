@@ -10,14 +10,20 @@ services:
       - pgdata_dev:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DATABASE_USER}", "-d", "${DATABASE_DB}"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
 
   api:
-    image: node:24-alpine
+    build:
+      context: ./api
     container_name: perlinadv_api_dev
     working_dir: /app
     volumes:
-      - ./api:/app
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm prisma migrate dev && pnpm prisma db seed && pnpm start:dev"
+      - ./api/src:/app/src
+      - ./api/prisma:/app/prisma
     environment:
       NODE_ENV: ${NODE_ENV}
       JWT_SECRET: ${JWT_SECRET}
@@ -26,9 +32,9 @@ services:
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
       SEED_ADMIN_NAME: ${SEED_ADMIN_NAME}
-      CI: true
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "7777:5000"
       - "5555:5555" # Prisma Studio
@@ -36,16 +42,16 @@ services:
       - backend
 
   web:
-    image: node:24-alpine
+    build:
+      context: ./web
     container_name: perlinadv_web_dev
     working_dir: /app
     volumes:
-      - ./web:/app
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm start:dev"
+      - ./web/src:/app/src
+      - ./web/public:/app/public
     environment:
       NODE_ENV: ${NODE_ENV}
       VITE_API_URL: ${VITE_API_URL}
-      CI: true
     ports:
       - "3333:5173"
     depends_on:
