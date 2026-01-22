@@ -15,23 +15,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  DATABASE_HOST: string;
-
-  @IsString()
-  @IsNotEmpty()
-  DATABASE_DB: string;
-
-  @IsString()
-  @IsNotEmpty()
-  DATABASE_USER: string;
-
-  @IsString()
-  @IsNotEmpty()
-  DATABASE_PASSWORD: string;
-
-  get DATABASE_URL(): string {
-    return `postgresql://${this.DATABASE_USER}:${this.DATABASE_PASSWORD}@${this.DATABASE_HOST}/${this.DATABASE_DB}?schema=public`;
-  }
+  DATABASE_URL: string;
 
   @IsString()
   @IsNotEmpty()
