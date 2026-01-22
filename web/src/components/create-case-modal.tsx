@@ -51,7 +51,7 @@ export const CreateCaseModal = ({ isOpen, onClose }: CreateCaseModalProps) => {
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+		<div className="fixed inset-0 bg-black/35 flex items-center justify-center z-50">
 			<Card className="p-6 w-full max-w-md max-h-96 overflow-y-auto">
 				<div className="flex justify-between items-center mb-4">
 					<h2 className="text-xl font-bold">Novo Processo</h2>
