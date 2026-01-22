@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {} from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { EnvironmentVariables } from 'src/config/environment-variables';
+import { TypedConfigService } from 'src/config/typed-config.service';
 import { JwtPayload } from '../jwt/jwt-payload.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(configService: ConfigService<EnvironmentVariables>) {
+  constructor(configService: TypedConfigService) {
     const secret = configService.get('JWT_SECRET');
 
     super({
@@ -21,3 +21,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return { ...payload };
   }
 }
+/*  */

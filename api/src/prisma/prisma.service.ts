@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { TypedConfigService } from 'src/config/typed-config.service';
 import { PrismaClient } from './generated/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from 'src/config/environment-variables';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-  constructor(configService: ConfigService<EnvironmentVariables>) {
-    const adapter = new PrismaBetterSqlite3({
+  constructor(configService: TypedConfigService) {
+    const adapter = new PrismaPg({
       url: configService.get('DATABASE_URL'),
     });
     super({ adapter });

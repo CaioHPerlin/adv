@@ -1,25 +1,37 @@
 import { plainToInstance } from 'class-transformer';
 import {
   IsIn,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   validateSync,
 } from 'class-validator';
+import type { StringValue } from 'node_modules/.pnpm/ms@2.1.3/node_modules/ms';
 
 export class EnvironmentVariables {
   @IsIn(['development', 'production', 'test'])
   @IsNotEmpty()
   NODE_ENV: 'development' | 'production' | 'test';
 
-  @IsInt()
-  @IsOptional()
-  PORT: number = 5000;
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_HOST: string;
 
   @IsString()
   @IsNotEmpty()
-  DATABASE_URL: string;
+  DATABASE_DB: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_USER: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_PASSWORD: string;
+
+  get DATABASE_URL(): string {
+    return `postgresql://${this.DATABASE_USER}:${this.DATABASE_PASSWORD}@${this.DATABASE_HOST}/${this.DATABASE_DB}?schema=public`;
+  }
 
   @IsString()
   @IsNotEmpty()
@@ -27,7 +39,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  JWT_EXPIRATION_TIME: string = '2h';
+  JWT_EXPIRATION_TIME: StringValue | number = '2h';
 }
 
 export function validateEnvironmentVariables(
