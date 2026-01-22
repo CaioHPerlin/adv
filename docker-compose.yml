@@ -30,6 +30,7 @@ services:
       - postgres
     ports:
       - "7777:5000"
+      - "5555:5555" # Prisma Studio
     networks:
       - backend
 
