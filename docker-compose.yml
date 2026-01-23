@@ -1,13 +1,13 @@
 services:
   postgres:
     image: postgres:17
-    container_name: perlinadv_postgres_dev
+    container_name: perlinadv_postgres
     environment:
       POSTGRES_DB: ${DATABASE_DB}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
-      - pgdata_dev:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
@@ -20,7 +20,7 @@ services:
     build:
       context: ./api
       target: dev
-    container_name: perlinadv_api_dev
+    container_name: perlinadv_api
     volumes:
       - ./api/src:/app/src
       - ./api/prisma:/app/prisma
@@ -47,7 +47,7 @@ services:
     build:
       context: ./web
       target: dev
-    container_name: perlinadv_web_dev
+    container_name: perlinadv_web
     volumes:
       - ./web/src:/app/src
     environment:
@@ -65,4 +65,4 @@ networks:
   frontend:
 
 volumes:
-  pgdata_dev:
+  pgdata:
