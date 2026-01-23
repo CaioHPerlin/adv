@@ -7,12 +7,12 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
+# IMPORTANT: meant to be used with docker compose for development! This image relies on
+# bind mounts to provide live code reloading.
 FROM base AS dev
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
-# not strictly necessary since we're running dev with volumes in docker-compose
-COPY . . 
 EXPOSE 5000 5555
-CMD ["sh", "-c", "pnpm prisma migrate deploy && pnpm prisma db seed && pnpm start:dev"]
+CMD ["sh", "-c", "pnpm prisma generate && pnpm prisma migrate deploy && pnpm prisma db seed && pnpm start:dev"]
 
 FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
@@ -20,7 +20,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm prisma generate --schema=./src/prisma/schema.prisma
+RUN pnpm prisma generate
 RUN pnpm build
 
 FROM base AS prod
