@@ -19,11 +19,11 @@ services:
   api:
     build:
       context: ./api
-      target: prod
+      target: dev
     container_name: perlinadv_api_dev
-    # volumes:
-    # - ./api/src:/app/src
-    # - ./api/prisma:/app/prisma
+    volumes:
+      - ./api/src:/app/src
+      - ./api/prisma:/app/prisma
     environment:
       NODE_ENV: ${NODE_ENV}
       JWT_SECRET: ${JWT_SECRET}
