@@ -13,3 +13,13 @@ FROM base AS dev
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 EXPOSE 5173
 ENTRYPOINT ["pnpm", "start:dev"]
+
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm build
+
+FROM nginx:alpine AS prod
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
