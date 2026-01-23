@@ -46,10 +46,10 @@ services:
   web:
     build:
       context: ./web
+      target: dev
     container_name: perlinadv_web_dev
-    working_dir: /app
     volumes:
-      - ./web:/app
+      - ./web/src:/app/src
     environment:
       NODE_ENV: ${NODE_ENV}
       VITE_API_URL: ${VITE_API_URL}
