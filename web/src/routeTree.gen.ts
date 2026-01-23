@@ -29,8 +29,8 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  "/entrar": typeof EntrarRoute
   "/": typeof AuthIndexRoute
+  "/entrar": typeof EntrarRoute
 }
 export interface FileRoutesByTo {
   "/entrar": typeof EntrarRoute
@@ -44,7 +44,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: "/entrar" | "/"
+  fullPaths: "/" | "/entrar"
   fileRoutesByTo: FileRoutesByTo
   to: "/entrar" | "/"
   id: "__root__" | "/_auth" | "/entrar" | "/_auth/"
@@ -67,7 +67,7 @@ declare module "@tanstack/react-router" {
     "/_auth": {
       id: "/_auth"
       path: ""
-      fullPath: ""
+      fullPath: "/"
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
