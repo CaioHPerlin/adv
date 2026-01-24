@@ -15,6 +15,8 @@ EXPOSE 5173
 ENTRYPOINT ["pnpm", "start:dev"]
 
 FROM base AS build
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build

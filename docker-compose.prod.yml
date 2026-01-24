@@ -1,13 +1,13 @@
 services:
   postgres:
     image: postgres:17
-    container_name: perlinadv_postgres
+    container_name: perlinadv_postgres_prod
     environment:
       POSTGRES_DB: ${DATABASE_DB}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_prod:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
@@ -19,17 +19,12 @@ services:
   api:
     build:
       context: ./api
-      target: dev
-    container_name: perlinadv_api
-    volumes:
-      - ./api/src:/app/src
-      - ./api/prisma:/app/prisma
-      - ./api/prisma.config.ts:/app/prisma.config.ts
-      - ./api/tsconfig.json:/app/tsconfig.json
+      target: prod
+    container_name: perlinadv_api_prod
     environment:
-      NODE_ENV: ${NODE_ENV}
+      NODE_ENV: "production"
       JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:5432/${DATABASE_DB}?schema=public
+      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@postgres:5432/${DATABASE_DB}?schema=public
       # Optional seeding variables
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
@@ -39,24 +34,18 @@ services:
         condition: service_healthy
     ports:
       - "7777:5000"
-      - "5555:5555" # Prisma Studio
     networks:
       - backend
 
   web:
     build:
       context: ./web
-      target: dev
-    container_name: perlinadv_web
-    volumes:
-      - ./web/src:/app/src
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      VITE_API_URL: ${VITE_API_URL}
+      target: prod
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    container_name: perlinadv_web_prod
     ports:
-      - "3333:5173"
-    depends_on:
-      - api
+      - "3333:80" # nginx port
     networks:
       - frontend
 
@@ -65,4 +54,4 @@ networks:
   frontend:
 
 volumes:
-  pgdata:
+  pgdata_prod:
