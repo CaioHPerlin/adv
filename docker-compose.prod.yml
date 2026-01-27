@@ -21,6 +21,7 @@ services:
       context: ./api
       target: prod
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.perlinadv_api_prod.rule=Host(`api.sistema.carmenperlin.adv.br`)"
     container_name: perlinadv_api_prod
     environment:
@@ -43,8 +44,9 @@ services:
       context: ./web
       target: prod
       args:
-        - VITE_API_URL=http://api.sistema.carmenperlin.adv.br
+        - VITE_API_URL=http://api.sistema.carmenperlin.adv.br/api
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.perlinadv_web_prod.rule=Host(`sistema.carmenperlin.adv.br`)"
     container_name: perlinadv_web_prod
     networks:
@@ -56,7 +58,6 @@ networks:
   frontend:
   traefik:
     external: true
-    name: traefik_default
 
 volumes:
   pgdata_prod:
