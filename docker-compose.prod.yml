@@ -20,6 +20,8 @@ services:
     build:
       context: ./api
       target: prod
+    labels:
+      - "traefik.http.routers.perlinadv_api_prod.rule=Host(`api.sistema.carmenperlin.adv.br`)"
     container_name: perlinadv_api_prod
     environment:
       NODE_ENV: "production"
@@ -32,26 +34,29 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - "7777:5000"
     networks:
       - backend
+      - traefik
 
   web:
     build:
       context: ./web
       target: prod
       args:
-        - VITE_API_URL=${VITE_API_URL}
+        - VITE_API_URL=http://api.sistema.carmenperlin.adv.br
+    labels:
+      - "traefik.http.routers.perlinadv_web_prod.rule=Host(`sistema.carmenperlin.adv.br`)"
     container_name: perlinadv_web_prod
-    ports:
-      - "3333:80" # nginx port
     networks:
       - frontend
+      - traefik
 
 networks:
   backend:
   frontend:
+  traefik:
+    external: true
+    name: traefik_default
 
 volumes:
   pgdata_prod:
